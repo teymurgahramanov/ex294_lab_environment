@@ -14,6 +14,7 @@ done
 sudo echo "#{SUBNET}.10 #{CONTROL_NAME} #{CONTROL_NAME}.#{DOMAIN}" >> /etc/hosts
 mkdir -p /root/.ssh
 if [ $(hostname) != #{CONTROL_NAME} ]; then
+    dnf update -y
     mv /tmp/id_rsa.pub /root/.ssh/authorized_keys
 elif [ $(hostname) == #{CONTROL_NAME} ]; then
     dnf update -y
