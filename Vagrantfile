@@ -27,11 +27,23 @@ chmod -R 600 /root/.ssh
 SCRIPT
 
 Vagrant.configure("2") do |config|
-
     config.vm.box_check_update = false
-  
-    (1..MANAGED_COUNT.to_i).each do |i|
-      config.vm.define "#{MANAGED_NAME}#{i}" do |node|
+    (1..MANAGED_COUNT.to_i).each do |i|       
+        config.vm.define "#{CONTROL_NAME}" do |node|
+            node.vm.box = "#{BOX}"
+            node.vm.hostname = "#{CONTROL_NAME}"
+            node.vm.network "private_network", ip: "#{SUBNET}.10"
+            node.vm.provider "virtualbox" do |vb|
+                vb.name = "EX294_#{CONTROL_NAME}"
+                vb.check_guest_additions = false
+                vb.cpus = "#{CPU}"
+                vb.memory = "#{MEMORY}"
+            end
+            node.vm.provision "file", source: "./id_rsa", destination: "/tmp/id_rsa"
+            node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"  
+            node.vm.provision "shell", inline: $PROVISION
+        end          
+        config.vm.define "#{MANAGED_NAME}#{i}" do |node|
         disk_file = "./storage/disk#{i}.vdi"
         node.vm.box = "#{BOX}"
         node.vm.hostname = "#{MANAGED_NAME}#{i}"
@@ -51,20 +63,5 @@ Vagrant.configure("2") do |config|
         node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"
         node.vm.provision "shell", inline: $PROVISION
       end
-    end
-
-    config.vm.define "#{CONTROL_NAME}" do |node|
-        node.vm.box = "#{BOX}"
-        node.vm.hostname = "#{CONTROL_NAME}"
-        node.vm.network "private_network", ip: "#{SUBNET}.10"
-        node.vm.provider "virtualbox" do |vb|
-            vb.name = "EX294_#{CONTROL_NAME}"
-            vb.check_guest_additions = false
-            vb.cpus = "#{CPU}"
-            vb.memory = "#{MEMORY}"
-        node.vm.provision "file", source: "./id_rsa", destination: "/tmp/id_rsa"
-        node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"  
-        node.vm.provision "shell", inline: $PROVISION
-        end
     end
 end
