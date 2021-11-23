@@ -44,24 +44,24 @@ Vagrant.configure("2") do |config|
             node.vm.provision "shell", inline: $PROVISION
         end          
         config.vm.define "#{MANAGED_NAME}#{i}" do |node|
-        disk_file = "./storage/disk#{i}.vdi"
-        node.vm.box = "#{BOX}"
-        node.vm.hostname = "#{MANAGED_NAME}#{i}"
-        node.vm.network "private_network", ip: "#{SUBNET}.#{i + 10}"
-        node.vm.provider "virtualbox" do |vb|\
-            vb.name = "EX294_#{MANAGED_NAME}#{i}"
-            vb.check_guest_additions = false
-            vb.cpus = "#{CPU}"
-            vb.memory = "#{MEMORY}"
-            if "#{i}" == "#{MANAGED_COUNT}"
-                unless File.exist? disk_file
-                vb.customize ['createhd', '--filename', disk_file, '--size', EXTRA_DISK_SIZE]
+            disk_file = "./storage/disk#{i}.vdi"
+            node.vm.box = "#{BOX}"
+            node.vm.hostname = "#{MANAGED_NAME}#{i}"
+            node.vm.network "private_network", ip: "#{SUBNET}.#{i + 10}"
+            node.vm.provider "virtualbox" do |vb|\
+                vb.name = "EX294_#{MANAGED_NAME}#{i}"
+                vb.check_guest_additions = false
+                vb.cpus = "#{CPU}"
+                vb.memory = "#{MEMORY}"
+                if "#{i}" == "#{MANAGED_COUNT}"
+                    unless File.exist? disk_file
+                    vb.customize ['createhd', '--filename', disk_file, '--size', EXTRA_DISK_SIZE]
+                    end
+                    vb.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_file]
                 end
-                vb.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_file]
             end
+            node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"
+            node.vm.provision "shell", inline: $PROVISION
         end
-        node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"
-        node.vm.provision "shell", inline: $PROVISION
-      end
     end
 end
