@@ -1,5 +1,5 @@
 BOX = 'generic/rhel8'
-MANAGED_COUNT = '2'
+MANAGED_COUNT = '4'
 MANAGED_NAME = 'mnode'
 CONTROL_NAME = 'cnode'
 DOMAIN = 'example.az'
@@ -27,22 +27,22 @@ chmod -R 600 /root/.ssh
 SCRIPT
 
 Vagrant.configure("2") do |config|
-    config.vm.box_check_update = false
-    (1..MANAGED_COUNT.to_i).each do |i|       
-        config.vm.define "#{CONTROL_NAME}" do |node|
-            node.vm.box = "#{BOX}"
-            node.vm.hostname = "#{CONTROL_NAME}"
-            node.vm.network "private_network", ip: "#{SUBNET}.10"
-            node.vm.provider "virtualbox" do |vb|
-                vb.name = "EX294_#{CONTROL_NAME}"
-                vb.check_guest_additions = false
-                vb.cpus = "#{CPU}"
-                vb.memory = "#{MEMORY}"
-            end
-            node.vm.provision "file", source: "./id_rsa", destination: "/tmp/id_rsa"
-            node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"  
-            node.vm.provision "shell", inline: $PROVISION
-        end          
+    config.vm.box_check_update = false     
+    config.vm.define "#{CONTROL_NAME}" do |node|
+        node.vm.box = "#{BOX}"
+        node.vm.hostname = "#{CONTROL_NAME}"
+        node.vm.network "private_network", ip: "#{SUBNET}.10"
+        node.vm.provider "virtualbox" do |vb|
+            vb.name = "EX294_#{CONTROL_NAME}"
+            vb.check_guest_additions = false
+            vb.cpus = "#{CPU}"
+            vb.memory = "#{MEMORY}"
+        end
+        node.vm.provision "file", source: "./id_rsa", destination: "/tmp/id_rsa"
+        node.vm.provision "file", source: "./id_rsa.pub", destination: "/tmp/id_rsa.pub"  
+        node.vm.provision "shell", inline: $PROVISION
+    end
+    (1..MANAGED_COUNT.to_i).each do |i|  
         config.vm.define "#{MANAGED_NAME}#{i}" do |node|
             disk_file = "./storage/disk#{i}.vdi"
             node.vm.box = "#{BOX}"
@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
                 vb.check_guest_additions = false
                 vb.cpus = "#{CPU}"
                 vb.memory = "#{MEMORY}"
-                if "#{i}" == "#{MANAGED_COUNT}"
+                if "#{i}" == "#{MANAGED_COUNT}" # Will attach additional disk to last managed node
                     unless File.exist? disk_file
                     vb.customize ['createhd', '--filename', disk_file, '--size', EXTRA_DISK_SIZE]
                     end
