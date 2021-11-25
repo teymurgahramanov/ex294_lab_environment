@@ -5,3 +5,5 @@ adhoc example:
 - ```ansible webservers -m user -a "name=foo state=present"```
 
 use setup module to get facts
+
+ “{{ user_password | password_hash(‘sha512’) }}”
