@@ -7,3 +7,7 @@ adhoc example:
 use setup module to get facts
 
  “{{ user_password | password_hash(‘sha512’) }}”
+
+custom fact structure
+
+ansible_local.(file name in /etc/ansible/facts.d/ on managed node).section.parameter
