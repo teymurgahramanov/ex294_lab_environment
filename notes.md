@@ -14,3 +14,8 @@ ansible_local.(file name in /etc/ansible/facts.d/ on managed node).section.param
 
 check host in group
 when: inventory_hostname in groups['database']
+
+jinja2 for 
+{% for host in groups['all'] %}
+{{ host }}
+{% endfor %}
