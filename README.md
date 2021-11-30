@@ -5,9 +5,10 @@
 - Vagrant >= 2.2.19
 
 ### Usage
-1. Set parameters
-2. Spin up environment: ```vagrant up```
-3. Take environment snapshot: ```vagrant snapshot push```
-4. Train hard 💪
-5. Restore environment snapshot: ```vagrant snapshot pop --no-delete```
-6. Repeat from step 4 🔄
+1. Copy Vagrantfile.sample to Vagrantfile
+2. Set parameters
+3. Spin up environment: ```vagrant up```
+4. Take environment snapshot: ```vagrant snapshot push```
+5. Train hard 💪
+6. Restore environment snapshot: ```vagrant snapshot pop --no-delete```
+7. Repeat from step 5 🔄
