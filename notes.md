@@ -11,3 +11,6 @@ use setup module to get facts
 custom fact structure
 
 ansible_local.(file name in /etc/ansible/facts.d/ on managed node).section.parameter
+
+check host in group
+when: inventory_hostname in groups['database']
