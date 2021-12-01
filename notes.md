@@ -1,21 +1,34 @@
-if there is no ansible.cfg
-- Create ansible.cfg, set ANSIBLE_CONFIG environment variable, use ansible-config dump to see 
+#### configure vim
+```echo "set ts=2 sw=2 expandtab" >> ~/.vimrc```
 
-adhoc example:
-- ```ansible webservers -m user -a "name=foo state=present"```
+#### ansible.cfg
+Use ```ansible-config``` dump to see possible parameters for ansible.cfg
 
-use setup module to get facts
+#### adhoc
+```ansible webservers -m user -a "name=foo state=present"```
 
- “{{ user_password | password_hash(‘sha512’) }}”
+#### set password in user module
+```"{{ 123456 | password_hash('sha512') }}"```
 
-custom fact structure
+#### access custom facts
+```ansible_local.(file name in /etc/ansible/facts.d/ on managed node).section.parameter```
 
-ansible_local.(file name in /etc/ansible/facts.d/ on managed node).section.parameter
+#### when host in group
+```when: inventory_hostname in groups['database']```
 
-check host in group
-when: inventory_hostname in groups['database']
-
-jinja2 for 
+#### jinja2 for loop
+```
 {% for host in groups['all'] %}
 {{ host }}
 {% endfor %}
+```
+#### special/magic variables
+- hostvars - Access host variables or gathered facts\
+```{{ hostvars['test.example.com']['ansible_facts']['distribution'] }}```
+- groups - Enumerate hosts in groups
+```
+{% for host in groups['app_servers'] %}
+   {{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}
+{% endfor %}
+```
+inventory_hostname - Hostname in inventory
